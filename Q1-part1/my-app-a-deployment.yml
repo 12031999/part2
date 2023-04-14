@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-a
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app-a
+  template:
+    metadata:
+      labels:
+        app: my-app-a
+      annotations:
+        pod-name-prefix: "Pod A"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - my-app-a
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: my-app-a
+        image: nginx:latest
+        ports:
+        - containerPort: 80
